@@ -1,21 +1,15 @@
 # Soyaki
-
-**TODO: Add description**
+A udp server whose sockets provide an abstraction over :gen_udp to keep track of sessions, with no other guarantees. Semantics heavily inspired by [ThousandIsland](https://hexdocs.pm/thousand_island/ThousandIsland.html)
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `soyaki` to your list of dependencies in `mix.exs`:
+Soyaki is not on hexdocs yet, so pull the dependency from git:
 
 ```elixir
 def deps do
   [
-    {:soyaki, "~> 0.1.0"}
+    {:soyaki, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/soyaki>.
 
