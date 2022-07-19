@@ -35,7 +35,7 @@ defmodule Soyaki.MixProject do
   end
 
   defp description do
-    "An Elixir module to easily create and use temporary files and directories."
+    "A udp server that provides abstractions over sessions."
   end
 
   defp package do
