@@ -8,7 +8,7 @@ Soyaki is a long way from hexdocs, so pull the dependency from git:
 ```elixir
 def deps do
   [
-    {:soyaki, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+    {:soyaki, git: "git@github.com:konstantin-aa/soyaki.git", tag: "0.1.0"}
   ]
 end
 ```
