@@ -11,7 +11,7 @@ defmodule Soyaki.Socket.Pool do
 
   @spec start_link(any()) :: GenServer.on_start()
   def start_link(config) do
-    GenServer.start_link(__MODULE__, config)
+    GenServer.start_link(__MODULE__, config, name: __MODULE__)
   end
 
   @impl true
@@ -21,7 +21,7 @@ defmodule Soyaki.Socket.Pool do
   end
 
   def incoming_packet(msg) do
-    GenServer.cast(:pool, {:incoming_packet, msg})
+    GenServer.cast(__MODULE__, {:incoming_packet, msg})
   end
 
   @impl true
@@ -35,7 +35,7 @@ defmodule Soyaki.Socket.Pool do
         } = state
       ) do
     case Registry.lookup(Soyaki.Socket.Registry, {host, port}) do
-      {pid, _} ->
+      [{pid, _}] ->
         GenServer.cast(pid, {:incoming_packet, packet})
 
       [] ->
