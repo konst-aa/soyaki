@@ -1,11 +1,9 @@
 defmodule Soyaki.Listener do
   use GenServer
 
-  alias Soyaki.Connection
-
   @spec start_link(integer()) :: :ok
   def start_link(port) do
-    GenServer.start_link(__MODULE__, port, name: :listener)
+    GenServer.start_link(__MODULE__, port, name: __MODULE__)
   end
 
   @impl true
