@@ -3,7 +3,7 @@ A udp server whose sockets provide an abstraction over :gen_udp to keep track of
 
 ## Installation
 
-Soyaki is not on hexdocs yet, so pull the dependency from git:
+Soyaki is a long way from hexdocs, so pull the dependency from git:
 
 ```elixir
 def deps do
