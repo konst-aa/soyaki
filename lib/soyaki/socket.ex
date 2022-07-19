@@ -63,13 +63,13 @@ defmodule Soyaki.Socket do
         %State{waiter: waiter} = state
       )
       when waiter != from and waiter do
-    Process.send(from, {:error, :not_waiter}, [])
+    Kernel.send(from, {:error, :not_waiter})
     {:noreply, state}
   end
 
   @impl true
   def handle_cast({:recv, from, _timeout}, %State{backlog: [packet | tail]} = state) do
-    Process.send(from, {:udp, nil, packet}, [])
+    Kernel.send(from, {:udp, nil, packet})
     {:noreply, Map.put(state, :backlog, tail)}
   end
 
@@ -93,7 +93,7 @@ defmodule Soyaki.Socket do
   def handle_cast({:incoming_packet, packet}, %State{waiter: waiter, timer: timer} = state)
       when is_pid(waiter) do
     Process.cancel_timer(timer)
-    Process.send(waiter, {:udp, nil, packet}, [])
+    Kernel.send(waiter, {:udp, nil, packet})
     {:noreply, Map.put(state, :waiter, nil)}
   end
 
@@ -115,14 +115,14 @@ defmodule Soyaki.Socket do
 
   @impl true
   def handle_info(:timeout, %{waiter: waiter} = state) when is_pid(waiter) do
-    Process.send(waiter, :timeout, [])
+    Kernel.send(waiter, :timeout)
     {:noreply, Map.put(state, :waiter, nil)}
   end
 
   @impl true
   def terminate({:shutdown, {:close, _}}, %State{addr_tuple: addr_tuple, waiter: waiter}) do
     if waiter do
-      Process.send(waiter, {:udp_closed, nil}, [])
+      Kernel.send(waiter, {:udp_closed, nil})
     end
 
     :ok

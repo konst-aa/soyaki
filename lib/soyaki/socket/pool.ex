@@ -17,7 +17,6 @@ defmodule Soyaki.Socket.Pool do
   @impl true
   def init(config) do
     Process.flag(:trap_exit, true)
-    IO.inspect(config)
     {:ok, config}
   end
 
