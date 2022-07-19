@@ -3,7 +3,7 @@ defmodule Soyaki.Listener do
 
   @spec start_link(integer()) :: :ok
   def start_link(port) do
-    GenServer.start_link(__MODULE__, port, name: __MODULE__)
+    GenServer.start_link(__MODULE__, port)
   end
 
   @impl true

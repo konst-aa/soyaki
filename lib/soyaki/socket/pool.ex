@@ -11,7 +11,7 @@ defmodule Soyaki.Socket.Pool do
 
   @spec start_link(any()) :: GenServer.on_start()
   def start_link(config) do
-    GenServer.start_link(__MODULE__, config, name: :pool)
+    GenServer.start_link(__MODULE__, config)
   end
 
   @impl true

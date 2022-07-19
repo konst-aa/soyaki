@@ -3,12 +3,8 @@ defmodule Soyaki.Application do
 
   @impl true
 
-  @spec start(any, any) :: {:error, any} | {:ok, pid}
+  @spec start(any, any) :: {:ok, pid()}
   def start(_type, _args) do
-    children = [
-      {Soyaki, port: 42900, announce: true, handler_module: Soyaki.Example.Handler}
-    ]
-
-    Supervisor.start_link(children, strategy: :one_for_one)
+    {:ok, self()}
   end
 end
