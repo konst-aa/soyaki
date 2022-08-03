@@ -15,7 +15,7 @@ defmodule Soyaki do
   Handlers link to the socket on initialization. Here is an example handler that
   inspects an incoming packet.
   ```elixir
-  defmodule  Soyaki.Example.Handler.Echo  do
+  defmodule Echo do
     use  Soyaki.Handler
 
     @impl Soyaki.Handler
@@ -24,7 +24,7 @@ defmodule Soyaki do
       {:continue, state}
     end
   end
-  {:ok, pid} = Soyaki.start_link(port: 1234, handler_module: Soyaki.Example.Handler.Echo)
+  {:ok, pid} = Soyaki.start_link(port: 1234, handler_module: Echo)
   ```
   For more information, including other callbacks, please consult the `Soyaki.Handler` documentation.
 
