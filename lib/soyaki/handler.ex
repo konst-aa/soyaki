@@ -7,6 +7,8 @@ defmodule Soyaki.Handler do
 
   @callback handle_packet(packet :: binary(), socket :: Soyaki.Socket.t(), state :: term()) ::
               handler_result()
+  @callback handle_connection(socket :: Soyaki.Socket.t(), state :: term()) ::
+              handler_result()
 
   defmacro __using__(_opts) do
     quote location: :keep do
@@ -14,6 +16,7 @@ defmodule Soyaki.Handler do
 
       use GenServer, restart: :temporary
 
+      def init_state(_socket, handler_init), do: handler_init
       def handle_connection(_socket, state), do: {:continue, state}
       def handle_packet(_packet, _socket, state), do: {:continue, state}
       def handle_close(_socket, _state), do: :ok
@@ -21,19 +24,22 @@ defmodule Soyaki.Handler do
       def handle_shutdown(_socket, _state), do: :ok
       def handle_timeout(_socket, _state), do: :ok
 
-      defoverridable(Soyaki.Handler)
+      defoverridable Soyaki.Handler
 
-      def start_link({socket, [handler_opts: handler_opts, genserver_opts: genserver_opts]}) do
-        GenServer.start_link(__MODULE__, {socket, handler_opts}, genserver_opts)
+      def start_link({socket, [handler_init: handler_init, genserver_opts: genserver_opts]}) do
+        GenServer.start_link(__MODULE__, {socket, handler_init}, genserver_opts)
       end
 
       @impl GenServer
-      def init({socket, handler_opts}) do
+      def init({socket, handler_init} = args) do
         Process.flag(:trap_exit, true)
 
+        Soyaki.Socket.link(socket)
         send(self(), :connection)
 
-        {:ok, {socket, handler_opts}}
+        state = __MODULE__.init_state(socket, handler_init)
+
+        {:ok, {socket, state}}
       end
 
       def handle_info(:connection, {socket, state}) do

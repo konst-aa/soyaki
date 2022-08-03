@@ -30,7 +30,7 @@ defmodule Soyaki.Socket.Pool do
         %{
           handler_module: handler_module,
           socket_opts: socket_opts,
-          handler_opts: handler_opts,
+          handler_init: handler_init,
           genserver_opts: genserver_opts
         } = state
       ) do
@@ -43,7 +43,7 @@ defmodule Soyaki.Socket.Pool do
 
         handler_module.start_link(
           {Socket.new(socket_pid, socket_opts),
-           [handler_opts: handler_opts, genserver_opts: genserver_opts]}
+           [handler_init: handler_init, genserver_opts: genserver_opts]}
         )
     end
 

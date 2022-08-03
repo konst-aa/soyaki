@@ -3,7 +3,7 @@ defmodule Soyaki.ServerConfig do
     :handler_module,
     :announce,
     port: 40000,
-    handler_opts: [],
+    handler_init: [],
     genserver_opts: [],
     socket_opts: []
   ]
@@ -11,7 +11,8 @@ defmodule Soyaki.ServerConfig do
   @type t :: %__MODULE__{
           port: integer(),
           handler_module: module(),
-          handler_opts: [] | [term()]
+          handler_init: any(),
+          genserver_opts: [] | [term()]
         }
 
   @spec new([term()]) :: __MODULE__.t() | no_return()

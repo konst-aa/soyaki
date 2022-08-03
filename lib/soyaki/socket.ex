@@ -1,25 +1,56 @@
 defmodule Soyaki.Socket do
+  @moduledoc """
+  A struct that keeps track of options, and the underlying socket pid. Provides
+  functionality to link/unlink, send, receive, and close. Banged versions might be a thing one day.
+  """
+
   defstruct [:socket_pid, read_timeout: 5000]
   use GenServer
 
   alias Soyaki.Socket.State
 
+  @typedoc "A reference to a socket along with metadata describing how to use it"
   @type t :: %__MODULE__{
           socket_pid: pid()
         }
-
-  @type opts :: %{}
+  @type opts :: [Keyword.t()]
 
   # API
 
+  @doc false
+  @spec new(pid(), opts()) :: t()
   def new(socket_pid, socket_opts) do
     struct(__MODULE__, Map.merge(%{socket_pid: socket_pid}, Map.new(socket_opts)))
   end
 
+  @doc """
+  Links a socket to the calling process.
+  """
+  @spec link(t()) :: :ok
+  def link(%__MODULE__{socket_pid: socket_pid}) do
+    Process.link(socket_pid)
+    :ok
+  end
+
+  @doc """
+  Uninks a socket from the calling process.
+  """
+  @spec unlink(t()) :: :ok
+  def unlink(%__MODULE__{socket_pid: socket_pid}) do
+    Process.unlink(socket_pid)
+    :ok
+  end
+
+  @doc """
+  Sends a udp packet to the connected ip and port.
+  """
   def send(%{socket_pid: pid}, packet) do
     GenServer.cast(pid, {:send, packet})
   end
 
+  @doc """
+  Listens for a packet to arrive in the socket. Blocks the calling process.
+  """
   @spec recv(__MODULE__.t(), nil | integer()) :: {:ok, binary()} | {:error, :timeout}
   def recv(%{socket_pid: pid}, timeout \\ nil) do
     GenServer.cast(pid, {:recv, self(), timeout})
@@ -31,11 +62,22 @@ defmodule Soyaki.Socket do
     end
   end
 
+  @doc """
+  Subscribes the calling process to the next packet to arrive in the socket. Can send one of 3 messages:
+  ```elixir
+  :timeout
+  {:udp_closed, nil}
+  {:udp, nil, packet}
+  ```
+  """
   @spec async_recv(__MODULE__.t(), nil | integer()) :: :ok
   def async_recv(%{socket_pid: pid}, timeout \\ nil) do
     GenServer.cast(pid, {:recv, self(), timeout})
   end
 
+  @doc """
+  Closes the socket. If specified, a final packet would be sent. Bold of you to expect for it to arrive, though.
+  """
   @spec close(__MODULE__.t(), atom(), nil | binary()) :: :ok
   def close(%{socket_pid: pid}, reason \\ nil, lastpacket \\ nil) do
     GenServer.cast(pid, {:close, reason, lastpacket})
@@ -49,8 +91,14 @@ defmodule Soyaki.Socket do
   @impl true
   def init({{:udp, udp_socket, host, port, packet}, socket_opts}) do
     Process.flag(:trap_exit, true)
-    GenServer.cast(self(), {:incoming_packet, packet})
-    {:ok, %State{udp_socket: udp_socket, addr_tuple: {host, port}, socket_opts: socket_opts}}
+
+    {:ok,
+     %State{
+       udp_socket: udp_socket,
+       addr_tuple: {host, port},
+       socket_opts: socket_opts,
+       backlog: [packet]
+     }}
   end
 
   def handle_cast({:recv, from, _timeout}, %State{waiter: from} = state) do
@@ -119,8 +167,12 @@ defmodule Soyaki.Socket do
     {:noreply, Map.put(state, :waiter, nil)}
   end
 
+  def handle_info({:EXIT, _, reason}, state) do
+    {:stop, reason, state}
+  end
+
   @impl true
-  def terminate({:shutdown, {:close, _}}, %State{addr_tuple: addr_tuple, waiter: waiter}) do
+  def terminate({:shutdown, {:close, _}}, %State{addr_tuple: _addr_tuple, waiter: waiter}) do
     if waiter do
       Kernel.send(waiter, {:udp_closed, nil})
     end

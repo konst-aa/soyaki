@@ -1,8 +1,8 @@
-defmodule Soyaki.Example.Handler do
+defmodule Soyaki.Example.Handler.Echo do
   use Soyaki.Handler
 
   @impl Soyaki.Handler
-  def handle_packet(packet, socket, state) do
+  def handle_packet(packet, _socket, state) do
     IO.inspect(packet)
     {:continue, state}
   end
