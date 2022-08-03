@@ -1,4 +1,6 @@
 defmodule Echo do
+  @moduledoc false
+
   use Soyaki.Handler
 
   @impl Soyaki.Handler

@@ -119,7 +119,7 @@ defmodule Soyaki.Handler do
         Soyaki.Socket.close(socket, reason)
       end
 
-      def handle_continuation(continuation, socket) do
+      defp handle_continuation(continuation, socket) do
         case continuation do
           {:continue, state} ->
             Soyaki.Socket.async_recv(socket)

@@ -1,4 +1,6 @@
 defmodule Soyaki.ServerConfig do
+  @moduledoc false
+
   defstruct [
     :handler_module,
     :announce,

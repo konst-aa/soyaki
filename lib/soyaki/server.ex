@@ -1,4 +1,6 @@
 defmodule Soyaki.Server do
+  @moduledoc false
+
   use Supervisor
 
   def start_link(%Soyaki.ServerConfig{} = config) do
@@ -14,5 +16,4 @@ defmodule Soyaki.Server do
 
     Supervisor.init(children, strategy: :rest_for_one)
   end
-
 end

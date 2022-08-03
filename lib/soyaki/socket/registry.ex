@@ -1,4 +1,6 @@
 defmodule Soyaki.Socket.Registry do
+  @moduledoc false
+
   def start_args() do
     [keys: :unique, name: __MODULE__]
   end

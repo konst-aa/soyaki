@@ -1,4 +1,6 @@
 defmodule Soyaki.Listener do
+  @moduledoc false
+
   use GenServer
 
   @spec start_link(integer()) :: :ok

@@ -1,4 +1,5 @@
 defmodule Soyaki.Socket.State do
+  @moduledoc "The state struct for the socket GenServer"
   defstruct [
     :udp_socket,
     :addr_tuple,

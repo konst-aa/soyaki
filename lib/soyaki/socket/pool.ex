@@ -1,4 +1,6 @@
 defmodule Soyaki.Socket.Pool do
+  @moduledoc false
+
   use GenServer
 
   defstruct [:handler_module, :socket_opts]
