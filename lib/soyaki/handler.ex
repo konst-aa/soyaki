@@ -1,15 +1,44 @@
 defmodule Soyaki.Handler do
+  @typedoc """
+  * `{:continue, state :: term()}` subscribes with the socket's read_timeout, which defaults at 5000ms.
+  * `{:continue, state :: term(), timeout()}` subscribes with given timeout.
+  * `{:close, state}` calls `c:handle_close/2`.
+  * `{:error, err, state}` calls `c:handle_error/3`.
+  Timeouts callback `c:handle_timeout/2`
+  """
   @type handler_result ::
           {:continue, state :: term()}
           | {:continue, state :: term(), timeout()}
           | {:close, state :: term()}
           | {:error, term(), state :: term()}
 
+  @doc "Called during `init`, returns state."
+  @callback init_state(socket :: Soyaki.Socket.t(), handler_init :: term()) :: state :: term()
+
+  @doc "Called after the connection was accepted, returns `handler_result`"
   @callback handle_packet(packet :: binary(), socket :: Soyaki.Socket.t(), state :: term()) ::
               handler_result()
+
+  @doc "Accepts a connection. Doesn't grab the first packet, returns `handler_result`"
   @callback handle_connection(socket :: Soyaki.Socket.t(), state :: term()) ::
               handler_result()
 
+  @doc "Called when straight up shutting down a genserver (`:shutdown`) in terminate callback.
+  Doesn't automatically close the socket."
+  @callback handle_shutdown(socket :: Soyaki.Socket.t(), state :: term()) :: term()
+
+  @doc """
+  Called when shutting down the genserver with a reason, usually `:local_closed`
+  from returning a `{:close, state}` continuation. Automatically closes the socket.
+  """
+  @callback handle_close(socket :: Soyaki.Socket.t(), state :: term()) :: term()
+
+  @doc "Called when terminating due to `:timeout`. Automatically closes the socket."
+  @callback handle_timeout(socket :: Soyaki.Socket.t(), state :: term()) :: term()
+
+  @doc "Called when shut down for any other reason. Automatically closes the socket."
+  @callback handle_error(error :: atom(), socket :: Soyaki.Socket.t(), state :: term()) ::
+              term()
   defmacro __using__(_opts) do
     quote location: :keep do
       @behaviour Soyaki.Handler
@@ -72,22 +101,22 @@ defmodule Soyaki.Handler do
 
       @impl GenServer
       def terminate({:shutdown, reason}, {socket, state}) do
-        Soyaki.Socket.close(socket, {:shutdown, reason})
-
         __MODULE__.handle_close(socket, state)
+
+        Soyaki.Socket.close(socket, {:shutdown, reason})
       end
 
       @impl GenServer
       def terminate(:timeout, {socket, state}) do
-        Soyaki.Socket.close(socket, :timeout)
-
         __MODULE__.handle_timeout(socket, state)
+
+        Soyaki.Socket.close(socket, :timeout)
       end
 
       def terminate(reason, {socket, state}) do
-        Soyaki.Socket.close(socket, reason)
-
         __MODULE__.handle_error(reason, socket, state)
+
+        Soyaki.Socket.close(socket, reason)
       end
 
       def handle_continuation(continuation, socket) do

@@ -1,10 +1,11 @@
 defmodule Soyaki.Socket.Pool do
   use GenServer
 
-  defstruct [:handler_module]
+  defstruct [:handler_module, :socket_opts]
 
   @type t :: %__MODULE__{
-          handler_module: module()
+          handler_module: module(),
+          socket_opts: Soyaki.Socket.opts()
         }
 
   alias Soyaki.Socket

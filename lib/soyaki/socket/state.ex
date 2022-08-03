@@ -4,8 +4,8 @@ defmodule Soyaki.Socket.State do
     :addr_tuple,
     :waiter,
     :timer,
-    read_timeout: 4000,
-    socket_opts: [],
+    read_timeout: 5000,
+    socket_options: [],
     backlog: []
   ]
 
@@ -14,7 +14,7 @@ defmodule Soyaki.Socket.State do
           addr_tuple: {:inet.ip_address(), :inet.port_number()},
           waiter: nil | pid(),
           read_timeout: integer(),
-          socket_opts: [term()],
+          socket_options: Soyaki.Socket.options(),
           backlog: list(),
           timer: nil | reference()
         }

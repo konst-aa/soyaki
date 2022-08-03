@@ -74,9 +74,9 @@ defmodule Soyaki do
   @type options :: [
           handler_module: module(),
           announce: nil | true,
-          handler_options: term(),
+          handler_options: Soyaki.Handler.options(),
+          socket_options: Soyaki.Socket.options(),
           port: :inet.port_number(),
-          num_acceptors: pos_integer(),
           timeout: integer()
         ]
 

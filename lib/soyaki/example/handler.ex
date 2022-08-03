@@ -1,4 +1,4 @@
-defmodule Soyaki.Example.Handler.Echo do
+defmodule Echo do
   use Soyaki.Handler
 
   @impl Soyaki.Handler

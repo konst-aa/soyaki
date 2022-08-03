@@ -4,23 +4,24 @@ defmodule Soyaki.Socket do
   functionality to link/unlink, send, receive, and close. Banged versions might be a thing one day.
   """
 
-  defstruct [:socket_pid, read_timeout: 5000]
+  defstruct [:socket_pid, :socket_options, read_timeout: 5000]
   use GenServer
 
   alias Soyaki.Socket.State
 
-  @typedoc "A reference to a socket along with metadata describing how to use it"
+  @typedoc "A reference to a socket along with some info."
   @type t :: %__MODULE__{
-          socket_pid: pid()
+          socket_pid: pid(),
+          socket_options: []
         }
-  @type opts :: [Keyword.t()]
+  @type options :: []
 
   # API
 
   @doc false
-  @spec new(pid(), opts()) :: t()
-  def new(socket_pid, socket_opts) do
-    struct(__MODULE__, Map.merge(%{socket_pid: socket_pid}, Map.new(socket_opts)))
+  @spec new(pid(), options()) :: t()
+  def new(socket_pid, socket_options) do
+    struct(__MODULE__, Map.merge(%{socket_pid: socket_pid}, Map.new(socket_options)))
   end
 
   @doc """
@@ -84,19 +85,19 @@ defmodule Soyaki.Socket do
   end
 
   # GenServer stuff
-  def start_link({{_, _, host, port, _}, _opts} = args) do
+  def start_link({{_, _, host, port, _}, _options} = args) do
     GenServer.start_link(__MODULE__, args, name: Soyaki.Socket.Registry.via_tuple(host, port))
   end
 
   @impl true
-  def init({{:udp, udp_socket, host, port, packet}, socket_opts}) do
+  def init({{:udp, udp_socket, host, port, packet}, socket_options}) do
     Process.flag(:trap_exit, true)
 
     {:ok,
      %State{
        udp_socket: udp_socket,
        addr_tuple: {host, port},
-       socket_opts: socket_opts,
+       socket_options: socket_options,
        backlog: [packet]
      }}
   end
