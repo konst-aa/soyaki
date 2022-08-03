@@ -5,6 +5,8 @@ A udp server whose sockets provide an abstraction over :gen_udp to keep track of
 Can't be bothered rn, might fix one day:
 - [ ] genserver_opts not provided to handler
 - [ ] socket opts never fully updated in `new`, nor passed around properly in pool.
+- [ ] tests
+- [ ] more docs
 
 ## Installation
 
