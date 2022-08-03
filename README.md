@@ -1,6 +1,8 @@
 # Soyaki
 A udp server whose sockets provide an abstraction over :gen_udp to keep track of sessions, with no other guarantees. Semantics heavily inspired by [ThousandIsland](https://hexdocs.pm/thousand_island/ThousandIsland.html)
 
+## open issues for typos or literally anything
+
 ## Options are broken and undocumented
 Can't be bothered rn, might fix one day:
 - [ ] don't use named processes **THIS IS ACTUALLY IMPORTANT**
