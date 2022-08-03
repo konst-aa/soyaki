@@ -5,6 +5,7 @@ pls open issues for typos or literally anything
 
 ## Options are broken and undocumented
 Can't be bothered rn, might fix one day:
+- [ ] CI for fixing bugs **THIS IS ACTUALLY IMPORTANT**
 - [ ] don't use named processes **THIS IS ACTUALLY IMPORTANT**
 - [ ] genserver_opts not provided to handler
 - [ ] socket opts never fully updated in `new`, nor passed around properly in pool.
