@@ -26,7 +26,6 @@ defmodule Soyaki.Socket do
           read_timeout: integer(),
           socket_options: Soyaki.Socket.options()
         }
-  @type options :: []
 
   # API
 
