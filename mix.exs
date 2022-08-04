@@ -5,7 +5,7 @@ defmodule Soyaki.MixProject do
   def project do
     [
       app: :soyaki,
-      version: "1.0.1",
+      version: "1.0.2",
       source_url: @source_url,
       homepage_url: @source_url,
       package: package(),

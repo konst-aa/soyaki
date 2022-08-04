@@ -45,8 +45,7 @@ defmodule Soyaki.Socket.Pool do
         {:ok, socket_pid} = Socket.start_link({msg, socket_opts})
 
         handler_module.start_link(
-          {Socket.new(socket_pid, socket_opts),
-           [handler_init: handler_init, genserver_opts: genserver_opts]}
+          {Socket.new(socket_pid), [handler_init: handler_init, genserver_opts: genserver_opts]}
         )
     end
 

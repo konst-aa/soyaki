@@ -4,7 +4,15 @@ defmodule Soyaki.Socket do
   functionality to link/unlink, send, receive, and close. Banged versions might be a thing one day.
   """
 
-  defstruct [:socket_pid, :socket_options, read_timeout: 5000]
+  defstruct [
+    :socket_pid,
+    :socket_options,
+    :udp_socket,
+    :addr_tuple,
+    :socket_options,
+    read_timeout: 5000
+  ]
+
   use GenServer
 
   alias Soyaki.Socket.State
@@ -12,16 +20,21 @@ defmodule Soyaki.Socket do
   @typedoc "A reference to a socket along with some info."
   @type t :: %__MODULE__{
           socket_pid: pid(),
-          socket_options: []
+          socket_options: [],
+          udp_socket: :gen_udp.socket(),
+          addr_tuple: {:inet.ip_address(), :inet.port_number()},
+          read_timeout: integer(),
+          socket_options: Soyaki.Socket.options()
         }
   @type options :: []
 
   # API
 
   @doc false
-  @spec new(pid(), options()) :: t()
-  def new(socket_pid, socket_options) do
-    struct(__MODULE__, Map.merge(%{socket_pid: socket_pid}, Map.new(socket_options)))
+  @spec new(pid()) :: t()
+  def new(socket_pid) do
+    non_internal = GenServer.call(socket_pid, :non_internal)
+    struct(__MODULE__, Map.merge(%{socket_pid: socket_pid}, non_internal))
   end
 
   @doc """
@@ -100,6 +113,24 @@ defmodule Soyaki.Socket do
        socket_options: socket_options,
        backlog: [packet]
      }}
+  end
+
+  @impl true
+  def handle_call(:non_internal, _from, state) do
+    %{
+      udp_socket: udp_socket,
+      addr_tuple: add_tuple,
+      read_timeout: read_timeout,
+      socket_options: socket_options
+    } = state
+
+    {:reply,
+     %{
+       udp_socket: udp_socket,
+       addr_tuple: add_tuple,
+       read_timeout: read_timeout,
+       socket_options: socket_options
+     }, state}
   end
 
   def handle_cast({:recv, from, _timeout}, %State{waiter: from} = state) do
