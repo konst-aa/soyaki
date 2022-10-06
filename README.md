@@ -1,4 +1,4 @@
-# Soyaki
+# Soyaki why would you ever use this? Just open a udp socket whenever necessary, and communicate over tcp
 
 A udp server whose sockets provide an abstraction over :gen_udp to keep track of sessions, with no other guarantees. Semantics heavily inspired by [ThousandIsland](https://hexdocs.pm/thousand_island/ThousandIsland.html).
 
